@@ -1,6 +1,18 @@
-//
-// Created by Gonzalo_gm on 5/3/26.
-//
+/*
+ * broker.c
+ * Intermediario entre clientes (TCP) y gestores de claves (UDP).
+ *
+ * - Escucha conexiones TCP de clientes.
+ * - Redirige peticiones via UDP al gestor de claves correspondiente:
+ *     clave 0-4  -> gestor 1
+ *     clave 5-10 -> gestor 2
+ * - Si el gestor no responde en TIMEOUT_SEG segundos responde "TIMEOUT".
+ *
+ * Uso:
+ *   ./broker <puerto_broker_tcp>
+ *            <ip_gestor1> <puerto_gestor1>
+ *            <ip_gestor2> <puerto_gestor2>
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,10 +27,12 @@
 #define TAM_MSG      256
 #define TIMEOUT_SEG  5
 
+/* ---- extrae el numero de clave de un comando ---- */
 static int extraer_clave(const char *msg) {
     char cmd[16], clave_str[64];
     if (sscanf(msg, "%15s %63s", cmd, clave_str) < 2)
         return -1;
+    /* la clave debe ser numerica */
     char *endp;
     long v = strtol(clave_str, &endp, 10);
     if (*endp != '\0' && *endp != ' ' && *endp != '\n')
@@ -26,6 +40,7 @@ static int extraer_clave(const char *msg) {
     return (int)v;
 }
 
+/* ---- envia peticion UDP al gestor y espera respuesta con timeout ---- */
 static void consultar_gestor(int sock_udp,
                               struct sockaddr_in *gestor,
                               const char *peticion,
@@ -40,6 +55,7 @@ static void consultar_gestor(int sock_udp,
         return;
     }
 
+    /* esperar respuesta con timeout */
     FD_ZERO(&rfds);
     FD_SET(sock_udp, &rfds);
     tv.tv_sec  = TIMEOUT_SEG;
@@ -64,6 +80,7 @@ static void consultar_gestor(int sock_udp,
     }
 }
 
+/* ---- atiende a un cliente TCP ya conectado ---- */
 static void atender_cliente(int fd_cliente,
                              struct sockaddr_in *cliente,
                              int sock_udp,
@@ -88,8 +105,10 @@ static void atender_cliente(int fd_cliente,
             break;
         }
 
+        /* eliminar salto de linea si viene de fgets */
         peticion[strcspn(peticion, "\n")] = '\0';
 
+        /* eliminar espacios iniciales */
         char *p = peticion;
         while (*p == ' ' || *p == '\t') p++;
         if (p != peticion) memmove(peticion, p, strlen(p) + 1);
@@ -97,6 +116,7 @@ static void atender_cliente(int fd_cliente,
         printf("[Broker] Peticion de %s:%d -> \"%s\"\n",
                inet_ntoa(cliente->sin_addr), ntohs(cliente->sin_port), peticion);
 
+        /* EXIT -> cierre de la conexion */
         if (strncmp(peticion, "EXIT", 4) == 0) {
             snprintf(respuesta, TAM_MSG, "ADIOS");
             send(fd_cliente, respuesta, strlen(respuesta), 0);
@@ -105,6 +125,7 @@ static void atender_cliente(int fd_cliente,
             break;
         }
 
+        /* determinar a que gestor va la peticion */
         int num_clave = extraer_clave(peticion);
         if (num_clave < 0 || num_clave > 10) {
             snprintf(respuesta, TAM_MSG, "ERROR: clave fuera de rango (0-10)");
@@ -129,6 +150,7 @@ static void atender_cliente(int fd_cliente,
            inet_ntoa(cliente->sin_addr), ntohs(cliente->sin_port));
 }
 
+/* ========== main ========== */
 int main(int argc, char *argv[]) {
     if (argc < 6) {
         fprintf(stderr,
@@ -143,9 +165,11 @@ int main(int argc, char *argv[]) {
     char *ip_g2     = argv[4];
     int  puerto_g2  = atoi(argv[5]);
 
+    /* ---- socket TCP para clientes ---- */
     int sock_tcp = socket(AF_INET, SOCK_STREAM, 0);
     if (sock_tcp == -1) { perror("Error socket TCP"); return -1; }
 
+    /* reutilizar puerto */
     int opt = 1;
     setsockopt(sock_tcp, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 
@@ -164,9 +188,11 @@ int main(int argc, char *argv[]) {
         perror("Error listen"); return -1;
     }
 
+    /* ---- socket UDP para gestores ---- */
     int sock_udp = socket(AF_INET, SOCK_DGRAM, 0);
     if (sock_udp == -1) { perror("Error socket UDP"); return -1; }
 
+    /* direcciones de los gestores */
     struct sockaddr_in gestor1, gestor2;
 
     gestor1.sin_family = AF_INET;
@@ -187,6 +213,7 @@ int main(int argc, char *argv[]) {
     printf("[Broker] Gestor1 -> %s:%d | Gestor2 -> %s:%d\n",
            ip_g1, puerto_g1, ip_g2, puerto_g2);
 
+    /* ---- bucle principal: aceptar clientes secuencialmente ---- */
     while (1) {
         struct sockaddr_in cliente;
         socklen_t tam = sizeof(struct sockaddr);

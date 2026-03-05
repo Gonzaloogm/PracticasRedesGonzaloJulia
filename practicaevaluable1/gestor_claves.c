@@ -1,6 +1,10 @@
-//
-// Created by Gonzalo_gm on 5/3/26.
-//
+/*
+ * gestor_claves.c
+ * Servidor de claves UDP (SOCK_DGRAM).
+ * Mantiene en memoria un array de estructuras clave-valor.
+ * Comandos soportados: GET, PUT, DEL
+ * Uso: ./gestor_claves <puerto>
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,11 +15,12 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#define MAX_ENTRADAS  11
+#define MAX_ENTRADAS  11      /* claves 0..10 */
 #define TAM_CLAVE     32
 #define TAM_VALOR     128
 #define TAM_MSG       256
 
+/* ---------- estructura clave-valor ---------- */
 typedef struct {
     int  ocupado;
     char clave[TAM_CLAVE];
@@ -24,6 +29,7 @@ typedef struct {
 
 static EntradaKV tabla[MAX_ENTRADAS];
 
+/* ---------- helpers ---------- */
 static int buscar(const char *clave) {
     int i;
     for (i = 0; i < MAX_ENTRADAS; i++)
@@ -40,6 +46,7 @@ static int hueco_libre(void) {
     return -1;
 }
 
+/* ---------- procesado de comando ---------- */
 static void procesar(const char *peticion, char *respuesta) {
     char cmd[16], clave[TAM_CLAVE], valor[TAM_VALOR];
     int idx;
@@ -48,6 +55,7 @@ static void procesar(const char *peticion, char *respuesta) {
     memset(clave, '\0', sizeof(clave));
     memset(valor, '\0', sizeof(valor));
 
+    /* GET <clave> */
     if (sscanf(peticion, "GET %31s", clave) == 1 &&
         strncmp(peticion, "GET", 3) == 0) {
 
@@ -57,22 +65,29 @@ static void procesar(const char *peticion, char *respuesta) {
         else
             snprintf(respuesta, TAM_MSG, "NOEncontrado");
 
+    /* PUT <clave> <valor> — modifica si existe, ERROR si no existe */
     } else if (sscanf(peticion, "PUT %31s %127s", clave, valor) == 2 &&
                strncmp(peticion, "PUT", 3) == 0) {
 
         idx = buscar(clave);
-        if (idx < 0)
-            idx = hueco_libre();
-
         if (idx >= 0) {
-            tabla[idx].ocupado = 1;
-            strncpy(tabla[idx].clave, clave, TAM_CLAVE - 1);
+            /* clave existente: actualizar valor */
             strncpy(tabla[idx].valor, valor, TAM_VALOR - 1);
             snprintf(respuesta, TAM_MSG, "INSERTADO");
         } else {
-            snprintf(respuesta, TAM_MSG, "ERROR");
+            /* clave no existe: intentar insertar en hueco libre */
+            idx = hueco_libre();
+            if (idx >= 0) {
+                tabla[idx].ocupado = 1;
+                strncpy(tabla[idx].clave, clave, TAM_CLAVE - 1);
+                strncpy(tabla[idx].valor, valor, TAM_VALOR - 1);
+                snprintf(respuesta, TAM_MSG, "INSERTADO");
+            } else {
+                snprintf(respuesta, TAM_MSG, "ERROR");
+            }
         }
 
+    /* DEL <clave> */
     } else if (sscanf(peticion, "DEL %31s", clave) == 1 &&
                strncmp(peticion, "DEL", 3) == 0) {
 
@@ -89,6 +104,7 @@ static void procesar(const char *peticion, char *respuesta) {
     }
 }
 
+/* ========== main ========== */
 int main(int argc, char *argv[]) {
     int    sockfd;
     struct sockaddr_in servidor, broker;
@@ -104,12 +120,13 @@ int main(int argc, char *argv[]) {
 
     memset(tabla, 0, sizeof(tabla));
 
+    /* --- crear socket UDP --- */
     sockfd = socket(AF_INET, SOCK_DGRAM, 0);
     if (sockfd == -1) { perror("Error socket"); return -1; }
 
     servidor.sin_family = AF_INET;
     servidor.sin_port   = htons(puerto);
-    servidor.sin_addr.s_addr = htonl(INADDR_ANY);
+    servidor.sin_addr.s_addr = INADDR_ANY;
     memset(&servidor.sin_zero, '\0', 8);
 
     if (bind(sockfd, (struct sockaddr *)&servidor, sizeof(struct sockaddr)) == -1) {
