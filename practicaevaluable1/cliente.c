@@ -18,6 +18,8 @@ int main(int argc, char *argv[]) {
         fprintf(stderr, "Uso: %s <ip_broker> <puerto_broker>\n", argv[0]);
         return -1;
     }
+    //holaaaa
+
 
     char *ip_broker    = argv[1];
     int   puerto_broker = atoi(argv[2]);
