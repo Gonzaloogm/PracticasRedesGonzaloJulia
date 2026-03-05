@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
     servidor.sin_port   = htons(puerto_broker);
     if (inet_aton(ip_broker, &servidor.sin_addr) == 0)
     {
-        fprintf(stderr, "Direccion IP invalida: %s\n", ip_broker);
+        fprintf(stderr, "Dirección IP inválida: %s\n", ip_broker);
         return -1;
     }
     memset(&servidor.sin_zero, '\0', 8);
@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
         if (nb <= 0)
         {
             if (nb == 0)
-                printf("[Cliente] El broker cerro la conexion\n");
+                printf("[Cliente] El broker ha cerrado la conexión\n");
             else
                 perror("Error recv");
             break;
@@ -92,6 +92,6 @@ int main(int argc, char *argv[])
     }
 
     close(fdSocket);
-    printf("[Cliente] Conexion cerrada\n");
+    printf("[Cliente] Conexión cerrada\n");
     return 0;
 }

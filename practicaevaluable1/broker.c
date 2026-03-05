@@ -95,13 +95,13 @@ static void atender_cliente(int fd_cliente, struct sockaddr_in *cliente, int soc
         while (*p == ' ' || *p == '\t') p++;
         if (p != peticion) memmove(peticion, p, strlen(p) + 1);
 
-        printf("[Broker] Peticion de %s:%d -> \"%s\"\n", inet_ntoa(cliente->sin_addr), ntohs(cliente->sin_port), peticion);
+        printf("[Broker] Petición de %s:%d -> \"%s\"\n", inet_ntoa(cliente->sin_addr), ntohs(cliente->sin_port), peticion);
 
         if (strncmp(peticion, "EXIT", 4) == 0)
         {
             snprintf(respuesta, TAM_MSG, "ADIOS");
             send(fd_cliente, respuesta, strlen(respuesta), 0);
-            printf("[Broker] Cliente %s:%d solicito EXIT\n", inet_ntoa(cliente->sin_addr), ntohs(cliente->sin_port));
+            printf("[Broker] Cliente %s:%d ha solicitado EXIT\n", inet_ntoa(cliente->sin_addr), ntohs(cliente->sin_port));
             break;
         }
 
@@ -127,7 +127,7 @@ static void atender_cliente(int fd_cliente, struct sockaddr_in *cliente, int soc
     }
 
     close(fd_cliente);
-    printf("[Broker] Conexion con %s:%d cerrada\n", inet_ntoa(cliente->sin_addr), ntohs(cliente->sin_port));
+    printf("[Broker] Conexión con %s:%d cerrada\n", inet_ntoa(cliente->sin_addr), ntohs(cliente->sin_port));
 }
 
 int main(int argc, char *argv[])
