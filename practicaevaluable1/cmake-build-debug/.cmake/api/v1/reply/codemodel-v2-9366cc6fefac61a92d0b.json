@@ -1,0 +1,78 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"jsonFile" : "directory-.-Debug-f5ebdc15457944623624.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.20"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "practicaevaluable1",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "broker::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-broker-Debug-1ab12b1e1d3b267677bd.json",
+					"name" : "broker",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "cliente::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-cliente-Debug-1111d053e2006a0ffd12.json",
+					"name" : "cliente",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "gestor_claves::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-gestor_claves-Debug-ff2a8d353c7df67ca9bb.json",
+					"name" : "gestor_claves",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/Users/administrador/Desktop/4\u00baINF/2o cuatri/redes locales y metropolitanas/practica/RepositorioRedes/PracticasRedesGonzaloJulia/practicaevaluable1/cmake-build-debug",
+		"source" : "/Users/administrador/Desktop/4\u00baINF/2o cuatri/redes locales y metropolitanas/practica/RepositorioRedes/PracticasRedesGonzaloJulia/practicaevaluable1"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 4
+	}
+}

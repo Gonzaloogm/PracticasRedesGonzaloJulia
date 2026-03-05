@@ -1,0 +1,5 @@
+/Users/administrador/Desktop/4ºINF/2o cuatri/redes locales y metropolitanas/practica/RepositorioRedes/PracticasRedesGonzaloJulia/practicaevaluable1/cmake-build-debug/CMakeFiles/broker.dir
+/Users/administrador/Desktop/4ºINF/2o cuatri/redes locales y metropolitanas/practica/RepositorioRedes/PracticasRedesGonzaloJulia/practicaevaluable1/cmake-build-debug/CMakeFiles/gestor_claves.dir
+/Users/administrador/Desktop/4ºINF/2o cuatri/redes locales y metropolitanas/practica/RepositorioRedes/PracticasRedesGonzaloJulia/practicaevaluable1/cmake-build-debug/CMakeFiles/cliente.dir
+/Users/administrador/Desktop/4ºINF/2o cuatri/redes locales y metropolitanas/practica/RepositorioRedes/PracticasRedesGonzaloJulia/practicaevaluable1/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/administrador/Desktop/4ºINF/2o cuatri/redes locales y metropolitanas/practica/RepositorioRedes/PracticasRedesGonzaloJulia/practicaevaluable1/cmake-build-debug/CMakeFiles/rebuild_cache.dir
