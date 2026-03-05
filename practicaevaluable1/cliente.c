@@ -13,19 +13,21 @@
 
 #define TAM_MSG 256
 
-int main(int argc, char *argv[]) {
-    if (argc < 3) {
+int main(int argc, char *argv[])
+{
+    if (argc < 3)
+    {
         fprintf(stderr, "Uso: %s <ip_broker> <puerto_broker>\n", argv[0]);
         return -1;
     }
-    //holaaaa
 
 
     char *ip_broker    = argv[1];
     int   puerto_broker = atoi(argv[2]);
 
     int fdSocket = socket(AF_INET, SOCK_STREAM, 0);
-    if (fdSocket == -1) {
+    if (fdSocket == -1)
+    {
         perror("Error socket");
         return -1;
     }
@@ -33,14 +35,15 @@ int main(int argc, char *argv[]) {
     struct sockaddr_in servidor;
     servidor.sin_family = AF_INET;
     servidor.sin_port   = htons(puerto_broker);
-    if (inet_aton(ip_broker, &servidor.sin_addr) == 0) {
+    if (inet_aton(ip_broker, &servidor.sin_addr) == 0)
+    {
         fprintf(stderr, "Direccion IP invalida: %s\n", ip_broker);
         return -1;
     }
     memset(&servidor.sin_zero, '\0', 8);
 
-    if (connect(fdSocket, (struct sockaddr *)&servidor,
-                sizeof(struct sockaddr)) == -1) {
+    if (connect(fdSocket, (struct sockaddr *)&servidor, sizeof(struct sockaddr)) == -1)
+    {
         perror("Error connect");
         return -1;
     }
@@ -50,7 +53,8 @@ int main(int argc, char *argv[]) {
 
     char mensaje[TAM_MSG], respuesta[TAM_MSG];
 
-    while (1) {
+    while (1)
+    {
         printf("> ");
         fflush(stdout);
 
@@ -65,13 +69,15 @@ int main(int argc, char *argv[]) {
         if (strlen(mensaje) == 0)
             continue;
 
-        if (send(fdSocket, mensaje, strlen(mensaje), 0) == -1) {
+        if (send(fdSocket, mensaje, strlen(mensaje), 0) == -1)
+        {
             perror("Error send");
             break;
         }
 
         int nb = recv(fdSocket, respuesta, TAM_MSG - 1, 0);
-        if (nb <= 0) {
+        if (nb <= 0)
+        {
             if (nb == 0)
                 printf("[Cliente] El broker cerro la conexion\n");
             else

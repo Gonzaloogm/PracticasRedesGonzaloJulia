@@ -1,10 +1,6 @@
-/*
- * gestor_claves.c
- * Servidor de claves UDP (SOCK_DGRAM).
- * Mantiene en memoria un array de estructuras clave-valor.
- * Comandos soportados: GET, PUT, DEL
- * Uso: ./gestor_claves <puerto>
- */
+//
+// Created by Gonzalo_gm on 5/3/26.
+//
 
 #include <stdio.h>
 #include <stdlib.h>
