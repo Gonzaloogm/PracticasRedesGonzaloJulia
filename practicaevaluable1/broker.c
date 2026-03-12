@@ -35,7 +35,7 @@ static void consultar_gestor(int sock_udp, struct sockaddr_in *gestor, const cha
 
     if (sendto(sock_udp, peticion, strlen(peticion), 0, (struct sockaddr *)gestor, sizeof(struct sockaddr)) == -1)
     {
-        perror("Error sendto gestor");
+        perror("Error en sendto gestor");
         snprintf(respuesta, TAM_MSG, "ERROR: no se pudo contactar gestor");
         return;
     }
@@ -48,7 +48,7 @@ static void consultar_gestor(int sock_udp, struct sockaddr_in *gestor, const cha
     int ret = select(sock_udp + 1, &rfds, NULL, NULL, &tv);
     if (ret == -1)
     {
-        perror("Error select");
+        perror("Error en select");
         snprintf(respuesta, TAM_MSG, "ERROR: select");
     } else if (ret == 0)
     {
@@ -61,7 +61,7 @@ static void consultar_gestor(int sock_udp, struct sockaddr_in *gestor, const cha
         memset(respuesta, '\0', TAM_MSG);
         if (recvfrom(sock_udp, respuesta, TAM_MSG - 1, 0, (struct sockaddr *)&origen, &tam) == -1)
         {
-            perror("Error recvfrom gestor");
+            perror("Error en recvfrom gestor");
             snprintf(respuesta, TAM_MSG, "ERROR: recvfrom");
         }
     }
@@ -85,7 +85,7 @@ static void atender_cliente(int fd_cliente, struct sockaddr_in *cliente, int soc
             if (nb == 0)
                 printf("[Broker] Cliente %s:%d cerro conexion\n", inet_ntoa(cliente->sin_addr), ntohs(cliente->sin_port));
             else
-                perror("Error recv cliente");
+                perror("Error en recv cliente");
             break;
         }
 
@@ -121,7 +121,7 @@ static void atender_cliente(int fd_cliente, struct sockaddr_in *cliente, int soc
 
         if (send(fd_cliente, respuesta, strlen(respuesta), 0) == -1)
         {
-            perror("Error send cliente");
+            perror("Error en send al cliente");
             break;
         }
     }
@@ -149,7 +149,7 @@ int main(int argc, char *argv[])
     int sock_tcp = socket(AF_INET, SOCK_STREAM, 0);
     if (sock_tcp == -1)
     {
-        perror("Error socket TCP"); return -1;
+        perror("Error en socket TCP"); return -1;
     }
 
     int opt = 1;
@@ -163,18 +163,18 @@ int main(int argc, char *argv[])
 
     if (bind(sock_tcp, (struct sockaddr *)&broker_addr, sizeof(struct sockaddr)) == -1)
     {
-        perror("Error bind TCP"); return -1;
+        perror("Error en bind TCP"); return -1;
     }
 
     if (listen(sock_tcp, 10) == -1)
     {
-        perror("Error listen"); return -1;
+        perror("Error en listen"); return -1;
     }
 
     int sock_udp = socket(AF_INET, SOCK_DGRAM, 0);
     if (sock_udp == -1)
     {
-        perror("Error socket UDP"); return -1;
+        perror("Error en socket UDP"); return -1;
     }
 
     struct sockaddr_in gestor1, gestor2;
@@ -207,7 +207,7 @@ int main(int argc, char *argv[])
         int fd_cli = accept(sock_tcp, (struct sockaddr *)&cliente, &tam);
         if (fd_cli == -1)
         {
-            perror("Error accept"); continue;
+            perror("Error en aceptar conexion"); continue;
         }
 
         atender_cliente(fd_cli, &cliente, sock_udp, &gestor1, &gestor2);

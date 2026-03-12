@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
     int fdSocket = socket(AF_INET, SOCK_STREAM, 0);
     if (fdSocket == -1)
     {
-        perror("Error socket");
+        perror("Error en socket");
         return -1;
     }
 
@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 
     if (connect(fdSocket, (struct sockaddr *)&servidor, sizeof(struct sockaddr)) == -1)
     {
-        perror("Error connect");
+        perror("Error al conectar");
         return -1;
     }
 
@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
 
         if (send(fdSocket, mensaje, strlen(mensaje), 0) == -1)
         {
-            perror("Error send");
+            perror("Error en send");
             break;
         }
 
@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
             if (nb == 0)
                 printf("[Cliente] El broker ha cerrado la conexión\n");
             else
-                perror("Error recv");
+                perror("Error en recv cliente");
             break;
         }
 

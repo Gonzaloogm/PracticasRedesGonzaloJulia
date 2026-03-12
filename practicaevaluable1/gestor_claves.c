@@ -121,7 +121,7 @@ int main(int argc, char *argv[]) {
     sockfd = socket(AF_INET, SOCK_DGRAM, 0);
     if (sockfd == -1)
     {
-        perror("Error socket"); return -1;
+        perror("Error en socket"); return -1;
     }
 
     servidor.sin_family = AF_INET;
@@ -131,7 +131,7 @@ int main(int argc, char *argv[]) {
 
     if (bind(sockfd, (struct sockaddr *)&servidor, sizeof(struct sockaddr)) == -1)
     {
-        perror("Error bind"); return -1;
+        perror("Error en bind"); return -1;
     }
 
     printf("[GestorClaves] Escuchando en puerto %d (UDP)\n", puerto);
@@ -143,7 +143,7 @@ int main(int argc, char *argv[]) {
 
         if (recvfrom(sockfd, peticion, TAM_MSG - 1, 0, (struct sockaddr *)&broker, &tam_broker) == -1)
         {
-            perror("Error recvfrom");
+            perror("Error en recvfrom");
             continue;
         }
 
@@ -155,7 +155,7 @@ int main(int argc, char *argv[]) {
 
         if (sendto(sockfd, respuesta, strlen(respuesta), 0, (struct sockaddr *)&broker, sizeof(struct sockaddr)) == -1)
         {
-            perror("Error sendto");
+            perror("Error en sendto");
         }
     }
 
